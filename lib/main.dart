@@ -62,10 +62,9 @@ class _OnboardingPageState extends State<OnboardingPage> {
       'subtitle':
           'غيّر طريقة إدارتك المدرسية مع ميزات متكاملة توفّر الوقت وتقلّل الجهد.',
       'image': 'images/image1.jpg',
-      'background': 'images/image3.png', // صورة الخلفية للشاشة الأولى
     },
     {
-      'title': 'ابدأ رحلتك التعليمية!',
+      'title': '!ابدأ رحلتك التعليمية',
       'subtitle': 'أدخل معلوماتك للوصول إلى حسابك الشخصي وإدارة مهامك.',
       'image': 'images/logo.png',
     },
@@ -87,11 +86,11 @@ class _OnboardingPageState extends State<OnboardingPage> {
   @override
   Widget build(BuildContext context) {
     final item = onboardingData[currentIndex];
+    final screenHeight = MediaQuery.of(context).size.height;
 
     return Scaffold(
       body: Stack(
         children: [
-          // خلفية مخصصة إذا موجودة
           if (item.containsKey('background'))
             Positioned.fill(
               child: Image.asset(
@@ -99,82 +98,119 @@ class _OnboardingPageState extends State<OnboardingPage> {
                 fit: BoxFit.cover,
               ),
             ),
-          Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 24.0, vertical: 60),
-            child: Column(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: [
-                Column(
-                  children: [
-                    if (item['image'] != null)
-                      Image.asset(item['image']!, height: 200),
-                    const SizedBox(height: 30),
-                    Text(
-                      item['title']!,
-                      style: const TextStyle(
-                        fontSize: 22,
-                        fontWeight: FontWeight.bold,
-                        color: Colors.green,
-                      ),
-                      textAlign: TextAlign.center,
+          Column(
+            children: [
+              // إذا كانت الشاشة هي الثانية
+              if (currentIndex == 1)
+                Container(
+                  width: double.infinity,
+                  height: screenHeight * 0.5,
+                  color: Color.fromARGB(255, 110, 218, 113),
+                  child: Center(
+                    child: CircleAvatar(
+                      radius: 80,
+                      backgroundColor: Colors.white,
+                      backgroundImage: AssetImage(item['image']!),
                     ),
-                    const SizedBox(height: 15),
-                    Text(
-                      item['subtitle']!,
-                      style: const TextStyle(fontSize: 16),
-                      textAlign: TextAlign.center,
-                    ),
-                  ],
-                ),
-                Column(
-                  children: [
-                    Row(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      children: List.generate(onboardingData.length, (index) {
-                        return AnimatedContainer(
-                          duration: const Duration(milliseconds: 300),
-                          margin: const EdgeInsets.symmetric(horizontal: 4),
-                          width: currentIndex == index ? 16 : 8,
-                          height: 8,
-                          decoration: BoxDecoration(
-                            color: currentIndex == index
-                                ? Colors.green
-                                : Colors.grey[300],
-                            borderRadius: BorderRadius.circular(20),
-                          ),
-                        );
-                      }),
-                    ),
-                    const SizedBox(height: 30),
-                    Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                      children: [
-                        IconButton(
-                          onPressed: currentIndex > 0
-                              ? () {
-                                  setState(() {
-                                    currentIndex--;
-                                  });
-                                }
-                              : null,
-                          icon: const Icon(Icons.arrow_back_rounded),
-                          iconSize: 36,
-                          color: currentIndex > 0 ? Colors.green : Colors.grey,
-                          tooltip: 'السابق',
-                        ),
-                        IconButton(
-                          onPressed: _nextPage,
-                          icon: const Icon(Icons.arrow_forward_rounded),
-                          iconSize: 36,
-                          color: Colors.green,
-                          tooltip: 'التالي',
-                        ),
-                      ],
-                    ),
-                  ],
+                  ),
                 )
-              ],
-            ),
+              else if (item['image'] == 'images/image1.jpg')
+                // تعديل الصورة بحيث تأخذ 50% من الارتفاع
+                Image.asset(
+                  item['image']!,
+                  width: double.infinity,
+                  height: screenHeight * 0.5, // ارتفاع 50% من الشاشة
+                  fit: BoxFit.cover,
+                )
+              else
+                Image.asset(
+                  item['image']!,
+                  width: double.infinity,
+                  height: 250,
+                  fit: BoxFit.cover,
+                ),
+              Expanded(
+                child: Padding(
+                  padding: const EdgeInsets.symmetric(
+                      horizontal: 24.0, vertical: 30),
+                  child: Column(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      Column(
+                        children: [
+                          Text(
+                            item['title']!,
+                            style: const TextStyle(
+                              fontSize: 22,
+                              fontWeight: FontWeight.bold,
+                              color: Colors.green,
+                            ),
+                            textAlign: TextAlign.center,
+                          ),
+                          const SizedBox(height: 15),
+                          Text(
+                            item['subtitle']!,
+                            style: const TextStyle(fontSize: 16),
+                            textAlign: TextAlign.center,
+                          ),
+                        ],
+                      ),
+                      Column(
+                        children: [
+                          Row(
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            children:
+                                List.generate(onboardingData.length, (index) {
+                              return AnimatedContainer(
+                                duration: const Duration(milliseconds: 300),
+                                margin:
+                                    const EdgeInsets.symmetric(horizontal: 4),
+                                width: currentIndex == index ? 16 : 8,
+                                height: 8,
+                                decoration: BoxDecoration(
+                                  color: currentIndex == index
+                                      ? Colors.green
+                                      : Colors.grey[300],
+                                  borderRadius: BorderRadius.circular(20),
+                                ),
+                              );
+                            }),
+                          ),
+                          const SizedBox(height: 30),
+                          Row(
+                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                            children: [
+                              IconButton(
+                                onPressed: currentIndex > 0
+                                    ? () {
+                                        setState(() {
+                                          currentIndex--;
+                                        });
+                                      }
+                                    : null,
+                                icon: const Icon(Icons.arrow_back_rounded),
+                                iconSize: 36,
+                                color: currentIndex > 0
+                                    ? Colors.green
+                                    : Colors.grey,
+                                tooltip: 'السابق',
+                              ),
+                              IconButton(
+                                onPressed: _nextPage,
+                                icon: const Icon(Icons.arrow_forward_rounded),
+                                iconSize: 36,
+                                color: Colors.green,
+                                tooltip: 'التالي',
+                              ),
+                            ],
+                          ),
+                        ],
+                      )
+                    ],
+                  ),
+                ),
+              ),
+            ],
           ),
         ],
       ),
@@ -192,18 +228,27 @@ class LoginChoicePage extends StatelessWidget {
       body: SafeArea(
         child: Column(
           children: [
-            // ✅ شعار AFAQ بخلفية خضراء عرض كامل
-            Container(
+            // ✅ خلفية صورة على كامل عرض الشاشة وارتفاع 50%
+            SizedBox(
               width: double.infinity,
-              color: Colors.green,
-              padding: const EdgeInsets.all(40),
-              child: Center(
-                child: Image.asset('images/logo.png', height: 150),
+              height: MediaQuery.of(context).size.height * 0.5,
+              child: Stack(
+                fit: StackFit.expand,
+                children: [
+                  Image.asset(
+                    'images/image3.png',
+                    fit: BoxFit.cover,
+                  ),
+                  Center(
+                    child: Image.asset(
+                      'images/image2.png',
+                      height: 150,
+                    ),
+                  ),
+                ],
               ),
             ),
-
             const SizedBox(height: 30),
-
             // باقي الصفحة
             Padding(
               padding: const EdgeInsets.symmetric(horizontal: 24.0),
@@ -218,7 +263,7 @@ class LoginChoicePage extends StatelessWidget {
                       );
                     },
                     style: ElevatedButton.styleFrom(
-                      backgroundColor: Colors.green,
+                      backgroundColor: const Color.fromARGB(255, 109, 223, 113),
                       padding: const EdgeInsets.symmetric(vertical: 14),
                       minimumSize: const Size(double.infinity, 50),
                     ),
