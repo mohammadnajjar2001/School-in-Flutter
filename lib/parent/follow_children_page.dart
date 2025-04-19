@@ -1,16 +1,15 @@
-import 'dart:io'; // لإغلاق التطبيق
-
+import 'dart:io';
 import 'package:AFAQ/main.dart';
-import 'package:AFAQ/parent/follow_children_page.dart';
+import 'package:AFAQ/parent/parent_welcome_page.dart';
 import 'package:AFAQ/parent/performance_reports_page.dart';
 import 'package:AFAQ/parent/settings_page.dart';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 
-class ParentWelcomePage extends StatelessWidget {
+class FollowChildrenPage extends StatelessWidget {
   final String token;
 
-  const ParentWelcomePage({super.key, required this.token});
+  const FollowChildrenPage({super.key, required this.token});
 
   Future<void> _logout(BuildContext context) async {
     final response = await http.post(
@@ -84,15 +83,10 @@ class ParentWelcomePage extends StatelessWidget {
             padding: EdgeInsets.zero,
             children: [
               const DrawerHeader(
-                decoration: BoxDecoration(
-                  color: Colors.green,
-                ),
+                decoration: BoxDecoration(color: Colors.green),
                 child: Text(
                   'القائمة الرئيسية',
-                  style: TextStyle(
-                    color: Colors.white,
-                    fontSize: 24,
-                  ),
+                  style: TextStyle(color: Colors.white, fontSize: 24),
                 ),
               ),
               ListTile(
@@ -156,10 +150,8 @@ class ParentWelcomePage extends StatelessWidget {
           ),
         ),
         appBar: AppBar(
-          title: const Text('أهلاً بولي الأمر 👨‍👩‍👧‍👦'),
+          title: const Text('متابعة الأبناء 📚'),
           backgroundColor: Colors.green,
-          elevation: 0,
-          automaticallyImplyLeading: true,
         ),
         body: Container(
           width: double.infinity,
@@ -172,27 +164,12 @@ class ParentWelcomePage extends StatelessWidget {
               end: Alignment.bottomCenter,
             ),
           ),
-          child: Column(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: const [
-              Icon(Icons.family_restroom, size: 100, color: Colors.green),
-              SizedBox(height: 20),
-              Text(
-                'مرحبًا بك يا ولي الأمر!',
-                style: TextStyle(
-                  fontSize: 26,
-                  fontWeight: FontWeight.bold,
-                  color: Colors.green,
-                ),
-                textAlign: TextAlign.center,
-              ),
-              SizedBox(height: 10),
-              Text(
-                'تم تسجيل دخولك بنجاح 👨‍👩‍👧‍👦',
-                style: TextStyle(fontSize: 18, color: Colors.black87),
-                textAlign: TextAlign.center,
-              ),
-            ],
+          child: const Center(
+            child: Text(
+              'هنا يمكنك متابعة الأبناء ومعرفة تفاصيلهم الدراسية 👨‍🏫',
+              style: TextStyle(fontSize: 20, color: Colors.black87),
+              textAlign: TextAlign.center,
+            ),
           ),
         ),
       ),

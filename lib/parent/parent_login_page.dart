@@ -101,7 +101,7 @@ class _ParentLoginPageState extends State<ParentLoginPage> {
                 ),
                 const SizedBox(height: 20),
                 const Text(
-                  '! أهلاً بك في AFAQ',
+                  'أهلاً بك في AFAQ!',
                   style: TextStyle(
                     fontSize: 20,
                     fontWeight: FontWeight.bold,
@@ -110,7 +110,7 @@ class _ParentLoginPageState extends State<ParentLoginPage> {
                 ),
                 const SizedBox(height: 10),
                 const Text(
-                  'تسجيل الدخول عبر البريد الإلكتروني أو الرقم التسلسلي للطالب',
+                  'تسجيل الدخول عبر البريد الإلكتروني فقط',
                   textAlign: TextAlign.center,
                   style: TextStyle(fontSize: 16, color: Colors.black54),
                 ),
@@ -119,7 +119,7 @@ class _ParentLoginPageState extends State<ParentLoginPage> {
                 TextField(
                   controller: _emailController,
                   decoration: InputDecoration(
-                    hintText: 'البريد الإلكتروني أو الرقم التسلسلي',
+                    hintText: 'البريد الإلكتروني',
                     filled: true,
                     fillColor: Colors.grey[200],
                     border: OutlineInputBorder(
@@ -160,8 +160,8 @@ class _ParentLoginPageState extends State<ParentLoginPage> {
                   child: ElevatedButton(
                     onPressed: _login,
                     style: ElevatedButton.styleFrom(
-                      backgroundColor: Colors.green,
                       padding: const EdgeInsets.symmetric(vertical: 14),
+                      backgroundColor: const Color(0xFF6DC24B),
                       shape: RoundedRectangleBorder(
                         borderRadius: BorderRadius.circular(12),
                       ),
