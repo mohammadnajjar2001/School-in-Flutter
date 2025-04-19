@@ -144,13 +144,17 @@ class _OnboardingPageState extends State<OnboardingPage> {
                               fontSize: 22,
                               fontWeight: FontWeight.bold,
                               color: Colors.green,
+                              fontFamily: 'Arial',
                             ),
                             textAlign: TextAlign.center,
                           ),
                           const SizedBox(height: 15),
                           Text(
                             item['subtitle']!,
-                            style: const TextStyle(fontSize: 16),
+                            style: const TextStyle(
+                              fontSize: 16,
+                              fontFamily: 'Bahij TheSansArabic',
+                            ),
                             textAlign: TextAlign.center,
                           ),
                         ],
