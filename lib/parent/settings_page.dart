@@ -1,15 +1,18 @@
 import 'dart:io';
 import 'package:AFAQ/main.dart';
-import 'package:AFAQ/parent/parent_welcome_page.dart';
-import 'package:AFAQ/parent/follow_children_page.dart';
-import 'package:AFAQ/parent/performance_reports_page.dart';
+import 'package:AFAQ/parent/parent_drawer.dart';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 
 class SettingsPage extends StatelessWidget {
   final String token;
-
-  const SettingsPage({super.key, required this.token});
+  final String name;
+  final String email;
+  const SettingsPage(
+      {super.key,
+      required this.token,
+      required this.name,
+      required this.email});
 
   Future<void> _logout(BuildContext context) async {
     final response = await http.post(
@@ -78,74 +81,10 @@ class SettingsPage extends StatelessWidget {
     return WillPopScope(
       onWillPop: () => _onWillPop(context),
       child: Scaffold(
-        drawer: Drawer(
-          child: ListView(
-            padding: EdgeInsets.zero,
-            children: [
-              const DrawerHeader(
-                decoration: BoxDecoration(color: Colors.green),
-                child: Text('القائمة الرئيسية',
-                    style: TextStyle(color: Colors.white, fontSize: 24)),
-              ),
-              ListTile(
-                leading: const Icon(Icons.home),
-                title: const Text('الصفحة الرئيسية'),
-                onTap: () {
-                  Navigator.pushReplacement(
-                    context,
-                    MaterialPageRoute(
-                      builder: (_) => ParentWelcomePage(token: token),
-                    ),
-                  );
-                },
-              ),
-              ListTile(
-                leading: const Icon(Icons.school),
-                title: const Text('متابعة الأبناء'),
-                onTap: () {
-                  Navigator.pop(context);
-                  Navigator.push(
-                    context,
-                    MaterialPageRoute(
-                      builder: (_) => FollowChildrenPage(token: token),
-                    ),
-                  );
-                },
-              ),
-              ListTile(
-                leading: const Icon(Icons.bar_chart),
-                title: const Text('تقارير الأداء'),
-                onTap: () {
-                  Navigator.pop(context);
-                  Navigator.push(
-                    context,
-                    MaterialPageRoute(
-                      builder: (_) => PerformanceReportsPage(token: token),
-                    ),
-                  );
-                },
-              ),
-              ListTile(
-                leading: const Icon(Icons.settings),
-                title: const Text('الإعدادات'),
-                onTap: () {
-                  Navigator.pop(context);
-                  Navigator.push(
-                    context,
-                    MaterialPageRoute(
-                      builder: (_) => SettingsPage(token: token),
-                    ),
-                  );
-                },
-              ),
-              const Divider(),
-              ListTile(
-                leading: const Icon(Icons.logout),
-                title: const Text('تسجيل الخروج'),
-                onTap: () => _logout(context),
-              ),
-            ],
-          ),
+        drawer: ParentDrawer(
+          token: token,
+          name: name,
+          email: email,
         ),
         appBar: AppBar(
           title: const Text('الإعدادات ⚙️'),

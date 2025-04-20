@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert';
-// تأكد من أنك استيراد الصفحة الصحيحة
 import 'parent_welcome_page.dart';
 
 class ParentLoginPage extends StatefulWidget {
@@ -37,12 +36,16 @@ class _ParentLoginPageState extends State<ParentLoginPage> {
     if (response.statusCode == 200) {
       final responseData = json.decode(response.body);
       final token = responseData['token'];
+      final name = responseData['user']['Name_Father']['ar'];
 
       Navigator.pushReplacement(
         context,
         MaterialPageRoute(
           builder: (_) => ParentWelcomePage(
-              token: token), // الانتقال إلى صفحة "ParentWelcomePage"
+            token: token,
+            name: name,
+            email: email,
+          ),
         ),
       );
     } else {
@@ -69,7 +72,6 @@ class _ParentLoginPageState extends State<ParentLoginPage> {
   @override
   Widget build(BuildContext context) {
     return Directionality(
-      // لدعم اللغة العربية
       textDirection: TextDirection.rtl,
       child: Scaffold(
         backgroundColor: Colors.white,
@@ -79,11 +81,9 @@ class _ParentLoginPageState extends State<ParentLoginPage> {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.center,
               children: [
-                // صورة الخلفية والشعار
                 Stack(
                   alignment: Alignment.center,
                   children: [
-                    // الخلفية
                     Positioned(
                       child: Image.asset(
                         'images/image3.png',
@@ -92,7 +92,6 @@ class _ParentLoginPageState extends State<ParentLoginPage> {
                         height: 180,
                       ),
                     ),
-                    // الشعار
                     Image.asset(
                       'images/logo.png',
                       height: 200,
@@ -115,7 +114,6 @@ class _ParentLoginPageState extends State<ParentLoginPage> {
                   style: TextStyle(fontSize: 16, color: Colors.black54),
                 ),
                 const SizedBox(height: 30),
-                // حقل البريد
                 TextField(
                   controller: _emailController,
                   decoration: InputDecoration(
@@ -129,7 +127,6 @@ class _ParentLoginPageState extends State<ParentLoginPage> {
                   ),
                 ),
                 const SizedBox(height: 16),
-                // حقل كلمة المرور
                 TextField(
                   controller: _passwordController,
                   obscureText: _obscureText,
@@ -154,7 +151,6 @@ class _ParentLoginPageState extends State<ParentLoginPage> {
                   ),
                 ),
                 const SizedBox(height: 30),
-                // زر الدخول
                 SizedBox(
                   width: double.infinity,
                   child: ElevatedButton(
