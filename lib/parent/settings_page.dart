@@ -89,6 +89,7 @@ class SettingsPage extends StatelessWidget {
         appBar: AppBar(
           title: const Text('الإعدادات ⚙️'),
           backgroundColor: Colors.green,
+          centerTitle: true,
         ),
         body: Container(
           width: double.infinity,

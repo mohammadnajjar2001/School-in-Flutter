@@ -16,10 +16,10 @@ class _StudentLoginPageState extends State<StudentLoginPage> {
   bool _obscureText = true;
 
   Future<void> _login() async {
-    final email = _emailController.text;
+    final emailInput = _emailController.text.trim();
     final password = _passwordController.text;
 
-    if (email.isEmpty || password.isEmpty) {
+    if (emailInput.isEmpty || password.isEmpty) {
       _showAlertDialog('الرجاء إدخال البريد الإلكتروني وكلمة المرور');
       return;
     }
@@ -27,15 +27,27 @@ class _StudentLoginPageState extends State<StudentLoginPage> {
     final response = await http.post(
       Uri.parse('http://10.0.2.2:8000/api/login/student'),
       headers: {'Content-Type': 'application/json'},
-      body: json.encode({'email': email, 'password': password}),
+      body: json.encode({
+        'email': emailInput,
+        'password': password,
+      }),
     );
 
     if (response.statusCode == 200) {
       final responseData = json.decode(response.body);
+      final user = responseData['user'];
+      final name = user['name']['ar'];     // الاسم بالعربية
+      final email = user['email'];         // الإيميل
+      final token = responseData['token']; // التوكن
+
       Navigator.pushReplacement(
         context,
         MaterialPageRoute(
-          builder: (_) => StudentWelcomePage(token: responseData['token']),
+          builder: (_) => StudentWelcomePage(
+            token: token,
+            name: name,
+            email: email,
+          ),
         ),
       );
     } else {
@@ -62,7 +74,6 @@ class _StudentLoginPageState extends State<StudentLoginPage> {
   @override
   Widget build(BuildContext context) {
     return Directionality(
-      // لدعم اللغة العربية
       textDirection: TextDirection.rtl,
       child: Scaffold(
         backgroundColor: Colors.white,
@@ -74,11 +85,10 @@ class _StudentLoginPageState extends State<StudentLoginPage> {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.center,
                 children: [
-                  // وضع صورة الخلفية في الخلف
+                  // خلفية مع الشعار
                   Stack(
                     alignment: Alignment.center,
                     children: [
-                      // الخلفية
                       Positioned(
                         child: Image.asset(
                           'images/image3.png',
@@ -87,21 +97,16 @@ class _StudentLoginPageState extends State<StudentLoginPage> {
                           height: 180,
                         ),
                       ),
-                      // الشعار
-                      Image.asset(
-                        'images/logo.png',
-                        height: 200, // تغيير الحجم هنا
-                      ),
+                      Image.asset('images/logo.png', height: 200),
                     ],
                   ),
                   const SizedBox(height: 20),
                   const Text(
                     'اهلاً بك في AFAQ!',
                     style: TextStyle(
-                      fontSize: 20,
-                      color: Colors.green,
-                      fontWeight: FontWeight.bold,
-                    ),
+                        fontSize: 20,
+                        color: Colors.green,
+                        fontWeight: FontWeight.bold),
                   ),
                   const SizedBox(height: 10),
                   const Text(
@@ -138,11 +143,9 @@ class _StudentLoginPageState extends State<StudentLoginPage> {
                         borderSide: BorderSide.none,
                       ),
                       suffixIcon: IconButton(
-                        icon: Icon(
-                          _obscureText
-                              ? Icons.visibility_off
-                              : Icons.visibility,
-                        ),
+                        icon: Icon(_obscureText
+                            ? Icons.visibility_off
+                            : Icons.visibility),
                         onPressed: () {
                           setState(() {
                             _obscureText = !_obscureText;
@@ -162,14 +165,11 @@ class _StudentLoginPageState extends State<StudentLoginPage> {
                       style: ElevatedButton.styleFrom(
                         shape: RoundedRectangleBorder(
                             borderRadius: BorderRadius.circular(12)),
-                        padding: const EdgeInsets.symmetric(vertical: 14),
-                        backgroundColor: const Color(0xFF6DC24B), // أخضر AFAQ
+                        backgroundColor: const Color(0xFF6DC24B),
                         foregroundColor: Colors.white,
                       ),
-                      child: const Text(
-                        'تسجيل الدخول',
-                        style: TextStyle(fontSize: 16),
-                      ),
+                      child: const Text('تسجيل الدخول',
+                          style: TextStyle(fontSize: 16)),
                     ),
                   ),
                 ],

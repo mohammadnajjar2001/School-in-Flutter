@@ -89,6 +89,7 @@ class PerformanceReportsPage extends StatelessWidget {
         appBar: AppBar(
           title: const Text('تقارير الأداء 📈'),
           backgroundColor: Colors.green,
+          centerTitle: true,
         ),
         body: Container(
           width: double.infinity,

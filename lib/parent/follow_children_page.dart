@@ -89,6 +89,7 @@ class FollowChildrenPage extends StatelessWidget {
         appBar: AppBar(
           title: const Text('متابعة الأبناء 📚'),
           backgroundColor: Colors.green,
+          centerTitle: true,
         ),
         body: Container(
           width: double.infinity,

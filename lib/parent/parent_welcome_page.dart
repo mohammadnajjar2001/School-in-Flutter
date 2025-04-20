@@ -91,6 +91,7 @@ class ParentWelcomePage extends StatelessWidget {
           backgroundColor: Colors.green,
           elevation: 0,
           automaticallyImplyLeading: true,
+          centerTitle: true,
         ),
         body: Container(
           width: double.infinity,
