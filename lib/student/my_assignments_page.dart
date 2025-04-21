@@ -1,7 +1,9 @@
+import 'dart:convert';
 import 'package:flutter/material.dart';
+import 'package:http/http.dart' as http;
 import 'student_drawer.dart';
 
-class MyAssignmentsPage extends StatelessWidget {
+class MyAssignmentsPage extends StatefulWidget {
   final String name;
   final String email;
   final String token;
@@ -14,79 +16,175 @@ class MyAssignmentsPage extends StatelessWidget {
   });
 
   @override
+  State<MyAssignmentsPage> createState() => _MyAssignmentsPageState();
+}
+
+class _MyAssignmentsPageState extends State<MyAssignmentsPage> {
+  List quizzes = [];
+  bool isLoading = true;
+
+  @override
+  void initState() {
+    super.initState();
+    fetchQuizzes();
+  }
+
+  Future<void> fetchQuizzes() async {
+    final response = await http.get(
+      Uri.parse('http://10.0.2.2:8000/api/student/quizzes'),
+      headers: {
+        'Authorization': 'Bearer ${widget.token}',
+        'Content-Type': 'application/json',
+      },
+    );
+
+    if (response.statusCode == 200) {
+      setState(() {
+        quizzes = json.decode(response.body);
+        isLoading = false;
+      });
+    } else {
+      setState(() => isLoading = false);
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('فشل في تحميل الاختبارات')),
+      );
+    }
+  }
+
+  @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        title: const Text('📝 واجباتي'),
-        backgroundColor: Colors.green,
-        centerTitle: true,
-      ),
-      drawer: StudentDrawer(name: name, email: email, token: token),
-      body: Padding(
-        padding: const EdgeInsets.all(16.0),
-        child: ListView(
-          children: [
-            _buildAssignmentCard(
-              subject: 'الرياضيات',
-              title: 'حل التمارين من صفحة 20 إلى 25',
-              dueDate: 'تسليم: 22 أبريل',
-              icon: Icons.calculate,
-              color: Colors.orange,
-            ),
-            _buildAssignmentCard(
-              subject: 'اللغة الإنجليزية',
-              title: 'كتابة مقال عن "My Family"',
-              dueDate: 'تسليم: 23 أبريل',
-              icon: Icons.language,
-              color: Colors.teal,
-            ),
-            _buildAssignmentCard(
-              subject: 'العلوم',
-              title: 'تقرير عن حالات المادة',
-              dueDate: 'تسليم: 25 أبريل',
-              icon: Icons.science,
-              color: Colors.blueAccent,
-            ),
-          ],
+    return Directionality(
+      textDirection: TextDirection.ltr,
+      child: Scaffold(
+        appBar: AppBar(
+          title: const Text('📝 الاختبارات'),
+          backgroundColor: Colors.green,
+          centerTitle: true,
         ),
+        drawer: StudentDrawer(
+          name: widget.name,
+          email: widget.email,
+          token: widget.token,
+        ),
+        body: isLoading
+            ? const Center(child: CircularProgressIndicator())
+            : quizzes.isEmpty
+                ? const Center(
+                    child: Text(
+                      'لا توجد اختبارات متاحة',
+                      style:
+                          TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
+                    ),
+                  )
+                : ListView.builder(
+                    padding: const EdgeInsets.all(16),
+                    itemCount: quizzes.length,
+                    itemBuilder: (context, index) {
+                      final quiz = quizzes[index];
+                      final quizName = quiz['name']['ar'] ?? 'بدون اسم';
+                      final subjectName =
+                          quiz['subject']['name']['ar'] ?? 'بدون مادة';
+                      final teacherName =
+                          quiz['teacher']['Name']['ar'] ?? 'بدون معلم';
+
+                      return _buildQuizCard(
+                        quizName: quizName,
+                        subjectName: subjectName,
+                        teacherName: teacherName,
+                      );
+                    },
+                  ),
       ),
     );
   }
 
-  Widget _buildAssignmentCard({
-    required String subject,
-    required String title,
-    required String dueDate,
-    required IconData icon,
-    required Color color,
+  Widget _buildQuizCard({
+    required String quizName,
+    required String subjectName,
+    required String teacherName,
   }) {
-    return Card(
-      elevation: 4,
-      margin: const EdgeInsets.symmetric(vertical: 10),
-      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
-      child: ListTile(
-        contentPadding: const EdgeInsets.all(16),
-        leading: CircleAvatar(
-          backgroundColor: color.withOpacity(0.2),
-          child: Icon(icon, color: color),
+    return Container(
+      margin: const EdgeInsets.only(bottom: 16),
+      decoration: BoxDecoration(
+        borderRadius: BorderRadius.circular(20),
+        gradient: LinearGradient(
+          colors: [Colors.teal.shade200, Colors.green.shade400],
+          begin: Alignment.topRight,
+          end: Alignment.bottomLeft,
         ),
-        title: Text(
-          subject,
-          style: const TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
-        ),
-        subtitle: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
+        boxShadow: [
+          BoxShadow(
+            color: Colors.black.withOpacity(0.1),
+            blurRadius: 8,
+            offset: const Offset(0, 4),
+          ),
+        ],
+      ),
+      child: Padding(
+        padding: const EdgeInsets.all(20),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.end,
           children: [
-            const SizedBox(height: 4),
-            Text(title),
-            const SizedBox(height: 4),
-            Text(dueDate, style: const TextStyle(color: Colors.red)),
+            Row(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                const Icon(Icons.quiz, size: 40, color: Colors.white),
+                const SizedBox(width: 16),
+                Expanded(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.end,
+                    children: [
+                      Text(
+                        quizName,
+                        style: const TextStyle(
+                          fontSize: 20,
+                          fontWeight: FontWeight.bold,
+                          color: Colors.white,
+                        ),
+                      ),
+                      const SizedBox(height: 8),
+                      Text(
+                        'المادة: $subjectName',
+                        style: const TextStyle(
+                            fontSize: 16, color: Colors.white70),
+                      ),
+                      const SizedBox(height: 4),
+                      Text(
+                        'المعلم: $teacherName',
+                        style: const TextStyle(
+                            fontSize: 16, color: Colors.white70),
+                      ),
+                    ],
+                  ),
+                ),
+              ],
+            ),
+            const SizedBox(height: 16),
+            Align(
+              alignment: Alignment.centerLeft,
+              child: ElevatedButton.icon(
+                onPressed: () {
+                  // يمكنك وضع التنقل أو تنفيذ أي منطق هنا
+                  ScaffoldMessenger.of(context).showSnackBar(
+                    const SnackBar(
+                        content: Text("الدخول للاختبار غير متاح حالياً")),
+                  );
+                },
+                icon: const Icon(Icons.play_arrow),
+                label: const Text("دخول للاختبار"),
+                style: ElevatedButton.styleFrom(
+                  backgroundColor: Colors.white,
+                  foregroundColor: Colors.green.shade700,
+                  padding:
+                      const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(30),
+                  ),
+                ),
+              ),
+            )
           ],
         ),
-        trailing: const Icon(Icons.arrow_forward_ios, size: 18),
-        onTap: () {
-          // ممكن تضيف تفاصيل أو إجراءات لاحقًا
-        },
       ),
     );
   }

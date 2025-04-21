@@ -17,7 +17,7 @@ class MyCoursesPage extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text('📚 دروسي'),
+        title: const Text('📚 المواد والكتب'),
         backgroundColor: Colors.green,
         centerTitle: true,
       ),

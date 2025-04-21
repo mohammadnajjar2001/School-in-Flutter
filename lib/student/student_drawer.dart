@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'package:AFAQ/main.dart';
 import 'student_welcome_page.dart';
+import 'student_profile_page.dart'; // أضف هذا في بداية الملف
 import 'my_courses_page.dart';
 import 'my_assignments_page.dart';
 import 'my_grades_page.dart';
@@ -121,7 +122,7 @@ class StudentDrawer extends StatelessWidget {
           ),
           ListTile(
             leading: const Icon(Icons.book),
-            title: const Text('دروسي'),
+            title: const Text('المواد والكتب'),
             onTap: () => Navigator.pushReplacement(
               context,
               MaterialPageRoute(
@@ -134,7 +135,7 @@ class StudentDrawer extends StatelessWidget {
           ),
           ListTile(
             leading: const Icon(Icons.assignment),
-            title: const Text('واجباتي'),
+            title: const Text('الاختبارات'),
             onTap: () => Navigator.pushReplacement(
               context,
               MaterialPageRoute(
@@ -156,6 +157,20 @@ class StudentDrawer extends StatelessWidget {
                         email: email,
                         token: token,
                       )),
+            ),
+          ),
+          ListTile(
+            leading: const Icon(Icons.person_outline),
+            title: const Text('الملف الشخصي'),
+            onTap: () => Navigator.pushReplacement(
+              context,
+              MaterialPageRoute(
+                builder: (_) => StudentProfilePage(
+                  name: name,
+                  email: email,
+                  token: token,
+                ),
+              ),
             ),
           ),
           const Divider(),
