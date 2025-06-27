@@ -1,22 +1,26 @@
+import 'dart:convert';
 import 'dart:io';
-import 'package:AFAQ/main.dart';
-import 'package:AFAQ/parent/parent_drawer.dart';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
+import 'package:AFAQ/main.dart';
+import 'package:AFAQ/parent/parent_drawer.dart';
+import 'package:AFAQ/config.dart';
 
 class ParentWelcomePage extends StatelessWidget {
   final String token;
   final String name;
   final String email;
-  const ParentWelcomePage(
-      {super.key,
-      required this.token,
-      required this.name,
-      required this.email});
+
+  const ParentWelcomePage({
+    super.key,
+    required this.token,
+    required this.name,
+    required this.email,
+  });
 
   Future<void> _logout(BuildContext context) async {
     final response = await http.post(
-      Uri.parse('http://10.0.2.2:8000/api/parent/logout'),
+      Uri.parse('$baseUrl/parent/logout'),
       headers: {
         'Authorization': 'Bearer $token',
         'Content-Type': 'application/json',
@@ -74,58 +78,104 @@ class ParentWelcomePage extends StatelessWidget {
         false;
   }
 
+  Future<List<Map<String, dynamic>>> fetchEvents() async {
+    final response = await http.get(
+      Uri.parse('$baseUrl/partner/events'),
+      headers: {'Authorization': 'Bearer $token'},
+    );
+
+    if (response.statusCode == 200) {
+      final List<dynamic> data = json.decode(response.body);
+      final now = DateTime.now();
+
+      return data
+          .where((event) {
+            final start = DateTime.parse(event['start']);
+            return start.month == now.month && start.year == now.year;
+          })
+          .map((event) => {
+                'title': event['title'],
+                'start': DateTime.parse(event['start']),
+              })
+          .toList();
+    } else {
+      throw Exception('فشل في تحميل أحداث ولي الأمر');
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
-    final screenHeight = MediaQuery.of(context).size.height;
-
     return WillPopScope(
       onWillPop: () => _onWillPop(context),
       child: Scaffold(
-        drawer: ParentDrawer(
-          token: token,
-          name: name,
-          email: email,
-        ),
         appBar: AppBar(
           title: Text('👨‍👩‍👧‍👦 أهلاً $name'),
           backgroundColor: Colors.green,
-          elevation: 0,
-          automaticallyImplyLeading: true,
           centerTitle: true,
         ),
-        body: Container(
-          width: double.infinity,
-          height: screenHeight,
-          padding: const EdgeInsets.symmetric(horizontal: 24),
-          decoration: const BoxDecoration(
-            gradient: LinearGradient(
-              colors: [Color(0xFFE8F5E9), Color(0xFFC8E6C9)],
-              begin: Alignment.topCenter,
-              end: Alignment.bottomCenter,
+        drawer: ParentDrawer(token: token, name: name, email: email),
+        body: Column(
+          children: [
+            const SizedBox(height: 20),
+            Text(
+              '👋 مرحبًا بك، $name',
+              style: const TextStyle(
+                fontSize: 24,
+                fontWeight: FontWeight.bold,
+                color: Colors.black87,
+              ),
             ),
-          ),
-          child: Column(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              const Icon(Icons.family_restroom, size: 100, color: Colors.green),
-              const SizedBox(height: 20),
-              Text(
-                '!مرحبًا بك يا $name',
-                style: const TextStyle(
-                  fontSize: 26,
-                  fontWeight: FontWeight.bold,
-                  color: Colors.green,
-                ),
-                textAlign: TextAlign.center,
+            const SizedBox(height: 30),
+            const Text(
+              '📅 أحداث هذا الشهر',
+              style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
+            ),
+            const SizedBox(height: 10),
+            Expanded(
+              child: FutureBuilder<List<Map<String, dynamic>>>(
+                future: fetchEvents(),
+                builder: (context, snapshot) {
+                  if (snapshot.connectionState == ConnectionState.waiting) {
+                    return const Center(child: CircularProgressIndicator());
+                  } else if (snapshot.hasError) {
+                    return Center(
+                        child: Text(
+                            'حدث خطأ أثناء جلب الأحداث: ${snapshot.error}'));
+                  } else if (snapshot.data!.isEmpty) {
+                    return const Center(
+                        child: Text('لا توجد أحداث لهذا الشهر'));
+                  } else {
+                    return ListView.builder(
+                      padding: const EdgeInsets.all(16),
+                      itemCount: snapshot.data!.length,
+                      itemBuilder: (context, index) {
+                        final event = snapshot.data![index];
+                        return Card(
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(16),
+                          ),
+                          elevation: 4,
+                          margin: const EdgeInsets.symmetric(vertical: 10),
+                          child: ListTile(
+                            leading:
+                                const Icon(Icons.event, color: Colors.green),
+                            title: Text(
+                              event['title'],
+                              style:
+                                  const TextStyle(fontWeight: FontWeight.bold),
+                            ),
+                            subtitle: Text(
+                              '📆 التاريخ: ${event['start'].toString().substring(0, 10)}',
+                            ),
+                          ),
+                        );
+                      },
+                    );
+                  }
+                },
               ),
-              const SizedBox(height: 10),
-              const Text(
-                '👨‍👩‍👧‍👦 تم تسجيل دخولك بنجاح ',
-                style: TextStyle(fontSize: 18, color: Colors.black87),
-                textAlign: TextAlign.center,
-              ),
-            ],
-          ),
+            ),
+          ],
         ),
       ),
     );

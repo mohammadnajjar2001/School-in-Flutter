@@ -4,6 +4,7 @@ import 'package:AFAQ/main.dart';
 import 'student_welcome_page.dart';
 import 'student_profile_page.dart'; // أضف هذا في بداية الملف
 import 'my_courses_page.dart';
+import 'package:AFAQ/config.dart';
 import 'my_assignments_page.dart';
 import 'my_grades_page.dart';
 
@@ -21,7 +22,7 @@ class StudentDrawer extends StatelessWidget {
 
   Future<void> _logout(BuildContext context) async {
     final response = await http.post(
-      Uri.parse('http://10.0.2.2:8000/api/student/logout'),
+      Uri.parse('$baseUrl/student/logout'),
       headers: {
         'Authorization': 'Bearer $token',
         'Content-Type': 'application/json',

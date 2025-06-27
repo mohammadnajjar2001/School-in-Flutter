@@ -1,6 +1,7 @@
 import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'student_drawer.dart';
+import 'package:AFAQ/config.dart';
 import 'package:http/http.dart' as http;
 
 class StudentProfilePage extends StatefulWidget {
@@ -35,7 +36,7 @@ class _StudentProfilePageState extends State<StudentProfilePage> {
 
   Future<void> fetchProfile() async {
     final response = await http.get(
-      Uri.parse('http://10.0.2.2:8000/api/student/profile'),
+      Uri.parse('$baseUrl/student/profile'),
       headers: {
         'Authorization': 'Bearer ${widget.token}',
         'Content-Type': 'application/json',
@@ -70,7 +71,7 @@ class _StudentProfilePageState extends State<StudentProfilePage> {
     setState(() => _isChangingPassword = true);
 
     final response = await http.put(
-      Uri.parse('http://10.0.2.2:8000/api/student/password'),
+      Uri.parse('$baseUrl/student/password'),
       headers: {
         'Authorization': 'Bearer ${widget.token}',
         'Content-Type': 'application/json',

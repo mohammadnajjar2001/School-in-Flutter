@@ -2,6 +2,7 @@ import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'student_drawer.dart';
+import 'quiz_questions_page.dart';
 
 class MyAssignmentsPage extends StatefulWidget {
   final String name;
@@ -86,11 +87,13 @@ class _MyAssignmentsPageState extends State<MyAssignmentsPage> {
                           quiz['subject']['name']['ar'] ?? 'بدون مادة';
                       final teacherName =
                           quiz['teacher']['Name']['ar'] ?? 'بدون معلم';
+                      final quizId = quiz['id'];
 
                       return _buildQuizCard(
                         quizName: quizName,
                         subjectName: subjectName,
                         teacherName: teacherName,
+                        quizId: quizId,
                       );
                     },
                   ),
@@ -102,6 +105,7 @@ class _MyAssignmentsPageState extends State<MyAssignmentsPage> {
     required String quizName,
     required String subjectName,
     required String teacherName,
+    required int quizId,
   }) {
     return Container(
       margin: const EdgeInsets.only(bottom: 16),
@@ -164,10 +168,14 @@ class _MyAssignmentsPageState extends State<MyAssignmentsPage> {
               alignment: Alignment.centerLeft,
               child: ElevatedButton.icon(
                 onPressed: () {
-                  // يمكنك وضع التنقل أو تنفيذ أي منطق هنا
-                  ScaffoldMessenger.of(context).showSnackBar(
-                    const SnackBar(
-                        content: Text("الدخول للاختبار غير متاح حالياً")),
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder: (_) => QuizQuestionsPage(
+                        quizId: quizId,
+                        token: widget.token,
+                      ),
+                    ),
                   );
                 },
                 icon: const Icon(Icons.play_arrow),

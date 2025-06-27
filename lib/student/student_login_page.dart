@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert';
+import 'package:AFAQ/config.dart';
 import 'student_welcome_page.dart';
 
 class StudentLoginPage extends StatefulWidget {
@@ -14,59 +15,73 @@ class _StudentLoginPageState extends State<StudentLoginPage> {
   final TextEditingController _emailController = TextEditingController();
   final TextEditingController _passwordController = TextEditingController();
   bool _obscureText = true;
+  bool _isLoading = false;
 
   Future<void> _login() async {
     final emailInput = _emailController.text.trim();
     final password = _passwordController.text;
 
     if (emailInput.isEmpty || password.isEmpty) {
-      _showAlertDialog('الرجاء إدخال البريد الإلكتروني وكلمة المرور');
+      _showSnackbar('الرجاء إدخال البريد الإلكتروني وكلمة المرور');
       return;
     }
 
-    final response = await http.post(
-      Uri.parse('http://10.0.2.2:8000/api/login/student'),
-      headers: {'Content-Type': 'application/json'},
-      body: json.encode({
-        'email': emailInput,
-        'password': password,
-      }),
-    );
+    setState(() {
+      _isLoading = true;
+    });
 
-    if (response.statusCode == 200) {
-      final responseData = json.decode(response.body);
-      final user = responseData['user'];
-      final name = user['name']['ar'];     // الاسم بالعربية
-      final email = user['email'];         // الإيميل
-      final token = responseData['token']; // التوكن
-
-      Navigator.pushReplacement(
-        context,
-        MaterialPageRoute(
-          builder: (_) => StudentWelcomePage(
-            token: token,
-            name: name,
-            email: email,
-          ),
-        ),
+    try {
+      final response = await http.post(
+        Uri.parse('$baseUrl/login/student'),
+        headers: {'Content-Type': 'application/json'},
+        body: json.encode({
+          'email': emailInput,
+          'password': password,
+        }),
       );
-    } else {
-      _showAlertDialog('البريد الإلكتروني أو كلمة المرور غير صحيحة');
+
+      setState(() {
+        _isLoading = false;
+      });
+
+      if (response.statusCode == 200) {
+        final responseData = json.decode(response.body);
+        final user = responseData['user'];
+        final name = user['name']['ar'];
+        final email = user['email'];
+        final token = responseData['token'];
+
+        _showSnackbar('تم تسجيل الدخول بنجاح', backgroundColor: Colors.green);
+
+        Future.delayed(const Duration(milliseconds: 500), () {
+          Navigator.pushReplacement(
+            context,
+            MaterialPageRoute(
+              builder: (_) => StudentWelcomePage(
+                token: token,
+                name: name,
+                email: email,
+              ),
+            ),
+          );
+        });
+      } else {
+        _showSnackbar('البريد الإلكتروني أو كلمة المرور غير صحيحة');
+      }
+    } catch (e) {
+      setState(() {
+        _isLoading = false;
+      });
+      _showSnackbar('حدث خطأ أثناء الاتصال بالخادم');
     }
   }
 
-  void _showAlertDialog(String message) {
-    showDialog(
-      context: context,
-      builder: (_) => AlertDialog(
-        title: const Text('خطأ'),
+  void _showSnackbar(String message, {Color backgroundColor = Colors.red}) {
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(
         content: Text(message),
-        actions: [
-          TextButton(
-            child: const Text('حسنًا'),
-            onPressed: () => Navigator.of(context).pop(),
-          ),
-        ],
+        behavior: SnackBarBehavior.floating,
+        backgroundColor: backgroundColor,
       ),
     );
   }
@@ -104,9 +119,10 @@ class _StudentLoginPageState extends State<StudentLoginPage> {
                   const Text(
                     'اهلاً بك في AFAQ!',
                     style: TextStyle(
-                        fontSize: 20,
-                        color: Colors.green,
-                        fontWeight: FontWeight.bold),
+                      fontSize: 20,
+                      color: Colors.green,
+                      fontWeight: FontWeight.bold,
+                    ),
                   ),
                   const SizedBox(height: 10),
                   const Text(
@@ -161,15 +177,27 @@ class _StudentLoginPageState extends State<StudentLoginPage> {
                     width: double.infinity,
                     height: 50,
                     child: ElevatedButton(
-                      onPressed: _login,
+                      onPressed: _isLoading ? null : _login,
                       style: ElevatedButton.styleFrom(
                         shape: RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(12)),
+                          borderRadius: BorderRadius.circular(12),
+                        ),
                         backgroundColor: const Color(0xFF6DC24B),
                         foregroundColor: Colors.white,
                       ),
-                      child: const Text('تسجيل الدخول',
-                          style: TextStyle(fontSize: 16)),
+                      child: _isLoading
+                          ? const SizedBox(
+                              height: 24,
+                              width: 24,
+                              child: CircularProgressIndicator(
+                                color: Colors.white,
+                                strokeWidth: 2,
+                              ),
+                            )
+                          : const Text(
+                              'تسجيل الدخول',
+                              style: TextStyle(fontSize: 16),
+                            ),
                     ),
                   ),
                 ],

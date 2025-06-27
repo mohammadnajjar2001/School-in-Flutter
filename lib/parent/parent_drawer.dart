@@ -1,7 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:AFAQ/main.dart';
+import 'package:AFAQ/config.dart';
 import 'package:AFAQ/parent/parent_welcome_page.dart';
 import 'package:AFAQ/parent/follow_children_page.dart';
+import 'package:AFAQ/parent/parent_profile_page.dart';
 import 'package:AFAQ/parent/performance_reports_page.dart';
 import 'package:AFAQ/parent/settings_page.dart';
 import 'package:http/http.dart' as http;
@@ -19,7 +21,7 @@ class ParentDrawer extends StatelessWidget {
 
   Future<void> _logout(BuildContext context) async {
     final response = await http.post(
-      Uri.parse('http://10.0.2.2:8000/api/parent/logout'),
+      Uri.parse('$baseUrl/parent/logout'),
       headers: {
         'Authorization': 'Bearer $token',
         'Content-Type': 'application/json',
@@ -120,6 +122,23 @@ class ParentDrawer extends StatelessWidget {
                 context,
                 MaterialPageRoute(
                   builder: (_) => ParentWelcomePage(
+                    token: token,
+                    name: name,
+                    email: email,
+                  ),
+                ),
+              );
+            },
+          ),
+          ListTile(
+            leading: const Icon(Icons.person),
+            title: const Text('الملف الشخصي'),
+            onTap: () {
+              Navigator.pop(context);
+              Navigator.push(
+                context,
+                MaterialPageRoute(
+                  builder: (_) => ParentProfilePage(
                     token: token,
                     name: name,
                     email: email,

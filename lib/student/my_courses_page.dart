@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert';
+import 'package:AFAQ/config.dart';
 import 'student_drawer.dart';
 
 class MyCoursesPage extends StatefulWidget {
@@ -22,7 +23,7 @@ class MyCoursesPage extends StatefulWidget {
 class _MyCoursesPageState extends State<MyCoursesPage> {
   Future<List<Map<String, dynamic>>> fetchSubjects() async {
     final response = await http.get(
-      Uri.parse('http://10.0.2.2:8000/api/student/subjects'),
+      Uri.parse('$baseUrl/student/subjects'),
       headers: {'Authorization': 'Bearer ${widget.token}'},
     );
 

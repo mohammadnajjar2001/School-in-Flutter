@@ -2,6 +2,7 @@ import 'dart:io';
 import 'package:AFAQ/main.dart';
 import 'package:AFAQ/parent/parent_drawer.dart';
 import 'package:flutter/material.dart';
+import 'package:AFAQ/config.dart';
 import 'package:http/http.dart' as http;
 
 class SettingsPage extends StatelessWidget {
@@ -16,7 +17,7 @@ class SettingsPage extends StatelessWidget {
 
   Future<void> _logout(BuildContext context) async {
     final response = await http.post(
-      Uri.parse('http://10.0.2.2:8000/api/parent/logout'),
+      Uri.parse('$baseUrl/parent/logout'),
       headers: {
         'Authorization': 'Bearer $token',
         'Content-Type': 'application/json',

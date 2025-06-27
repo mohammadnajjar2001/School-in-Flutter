@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'student_drawer.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert';
+import 'package:AFAQ/config.dart';
 
 class StudentWelcomePage extends StatelessWidget {
   final String token;
@@ -17,7 +18,7 @@ class StudentWelcomePage extends StatelessWidget {
 
   Future<List<Map<String, dynamic>>> fetchEvents() async {
     final response = await http.get(
-      Uri.parse('http://10.0.2.2:8000/api/student/events'),
+      Uri.parse('$baseUrl/student/events'),
       headers: {'Authorization': 'Bearer $token'},
     );
 

@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert';
+import 'package:AFAQ/config.dart';
 import 'parent_welcome_page.dart';
 
 class ParentLoginPage extends StatefulWidget {
@@ -14,57 +15,71 @@ class _ParentLoginPageState extends State<ParentLoginPage> {
   final TextEditingController _emailController = TextEditingController();
   final TextEditingController _passwordController = TextEditingController();
   bool _obscureText = true;
+  bool _isLoading = false;
 
   Future<void> _login() async {
     final email = _emailController.text;
     final password = _passwordController.text;
 
     if (email.isEmpty || password.isEmpty) {
-      _showAlertDialog('الرجاء إدخال البريد الإلكتروني وكلمة المرور');
+      _showSnackbar('الرجاء إدخال البريد الإلكتروني وكلمة المرور');
       return;
     }
 
-    final response = await http.post(
-      Uri.parse('http://10.0.2.2:8000/api/login/parent'),
-      headers: {'Content-Type': 'application/json'},
-      body: json.encode({
-        'email': email,
-        'password': password,
-      }),
-    );
+    setState(() {
+      _isLoading = true;
+    });
 
-    if (response.statusCode == 200) {
-      final responseData = json.decode(response.body);
-      final token = responseData['token'];
-      final name = responseData['user']['Name_Father']['ar'];
-
-      Navigator.pushReplacement(
-        context,
-        MaterialPageRoute(
-          builder: (_) => ParentWelcomePage(
-            token: token,
-            name: name,
-            email: email,
-          ),
-        ),
+    try {
+      final response = await http.post(
+        Uri.parse('$baseUrl/login/parent'),
+        headers: {'Content-Type': 'application/json'},
+        body: json.encode({
+          'email': email,
+          'password': password,
+        }),
       );
-    } else {
-      _showAlertDialog('البريد الإلكتروني أو كلمة المرور غير صحيحة');
+
+      setState(() {
+        _isLoading = false;
+      });
+
+      if (response.statusCode == 200) {
+        final responseData = json.decode(response.body);
+        final token = responseData['token'];
+        final name = responseData['user']['Name_Father']['ar'];
+
+        _showSnackbar('تم تسجيل الدخول بنجاح', backgroundColor: Colors.green);
+
+        Future.delayed(const Duration(milliseconds: 500), () {
+          Navigator.pushReplacement(
+            context,
+            MaterialPageRoute(
+              builder: (_) => ParentWelcomePage(
+                token: token,
+                name: name,
+                email: email,
+              ),
+            ),
+          );
+        });
+      } else {
+        _showSnackbar('البريد الإلكتروني أو كلمة المرور غير صحيحة');
+      }
+    } catch (e) {
+      setState(() {
+        _isLoading = false;
+      });
+      _showSnackbar('حدث خطأ أثناء الاتصال بالخادم');
     }
   }
 
-  void _showAlertDialog(String message) {
-    showDialog(
-      context: context,
-      builder: (context) => AlertDialog(
-        title: const Text('خطأ'),
+  void _showSnackbar(String message, {Color backgroundColor = Colors.red}) {
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(
         content: Text(message),
-        actions: [
-          TextButton(
-            child: const Text('حسنًا'),
-            onPressed: () => Navigator.of(context).pop(),
-          ),
-        ],
+        behavior: SnackBarBehavior.floating,
+        backgroundColor: backgroundColor,
       ),
     );
   }
@@ -154,7 +169,7 @@ class _ParentLoginPageState extends State<ParentLoginPage> {
                 SizedBox(
                   width: double.infinity,
                   child: ElevatedButton(
-                    onPressed: _login,
+                    onPressed: _isLoading ? null : _login,
                     style: ElevatedButton.styleFrom(
                       padding: const EdgeInsets.symmetric(vertical: 14),
                       backgroundColor: const Color(0xFF6DC24B),
@@ -162,10 +177,19 @@ class _ParentLoginPageState extends State<ParentLoginPage> {
                         borderRadius: BorderRadius.circular(12),
                       ),
                     ),
-                    child: const Text(
-                      'تسجيل الدخول',
-                      style: TextStyle(fontSize: 16),
-                    ),
+                    child: _isLoading
+                        ? const SizedBox(
+                            height: 24,
+                            width: 24,
+                            child: CircularProgressIndicator(
+                              color: Colors.white,
+                              strokeWidth: 2,
+                            ),
+                          )
+                        : const Text(
+                            'تسجيل الدخول',
+                            style: TextStyle(fontSize: 16),
+                          ),
                   ),
                 ),
               ],
