@@ -1,6 +1,7 @@
 import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
+import 'package:AFAQ/config.dart';
 import 'quiz_result_page.dart';
 
 class QuizQuestionsPage extends StatefulWidget {
@@ -29,8 +30,7 @@ class _QuizQuestionsPageState extends State<QuizQuestionsPage> {
   }
 
   Future<void> fetchQuestions() async {
-    final url =
-        'http://10.0.2.2:8000/api/student/quizze/${widget.quizId}/get-questions';
+    final url ='$baseUrl/student/quizze/${widget.quizId}/get-questions';
     final response = await http.get(
       Uri.parse(url),
       headers: {
@@ -88,8 +88,7 @@ class _QuizQuestionsPageState extends State<QuizQuestionsPage> {
     final payload = selectedAnswers.entries
         .map((e) => {"q_id": e.key, "answer": e.value})
         .toList();
-    final url =
-        'http://10.0.2.2:8000/api/student/quizze/${widget.quizId}/answer-questions';
+    final url ='$baseUrl/student/quizze/${widget.quizId}/answer-questions';
     final response = await http.post(
       Uri.parse(url),
       headers: {

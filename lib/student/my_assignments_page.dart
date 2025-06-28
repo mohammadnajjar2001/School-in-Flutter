@@ -2,6 +2,7 @@ import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'student_drawer.dart';
+import 'package:AFAQ/config.dart';
 import 'quiz_questions_page.dart';
 
 class MyAssignmentsPage extends StatefulWidget {
@@ -32,7 +33,7 @@ class _MyAssignmentsPageState extends State<MyAssignmentsPage> {
 
   Future<void> fetchQuizzes() async {
     final response = await http.get(
-      Uri.parse('http://10.0.2.2:8000/api/student/quizzes'),
+      Uri.parse('$baseUrl/student/quizzes'),
       headers: {
         'Authorization': 'Bearer ${widget.token}',
         'Content-Type': 'application/json',
