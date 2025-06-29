@@ -6,6 +6,8 @@ import 'package:AFAQ/parent/follow_children_page.dart';
 import 'package:AFAQ/parent/parent_profile_page.dart';
 import 'package:AFAQ/parent/performance_reports_page.dart';
 import 'package:AFAQ/parent/settings_page.dart';
+import 'package:AFAQ/parent/parent_invoices_page0.dart';
+import 'package:AFAQ/parent/parent_invoices_page.dart';
 import 'package:http/http.dart' as http;
 
 class ParentDrawer extends StatelessWidget {
@@ -182,19 +184,45 @@ class ParentDrawer extends StatelessWidget {
             },
           ),
           ListTile(
-            leading: const Icon(Icons.settings),
-            title: const Text('الإعدادات'),
+            leading: const Icon(Icons.receipt),
+            title: const Text(' فواتير الأبناء الواجب دفعها'),
             onTap: () {
               Navigator.pop(context);
               Navigator.push(
                 context,
                 MaterialPageRoute(
-                  builder: (_) =>
-                      SettingsPage(token: token, name: name, email: email),
+                  builder: (_) => ParentInvoicesPage0(token: token),
                 ),
               );
             },
           ),
+          ListTile(
+            leading: const Icon(Icons.receipt),
+            title: const Text('مدغوعات فواتير الأبناء'),
+            onTap: () {
+              Navigator.pop(context);
+              Navigator.push(
+                context,
+                MaterialPageRoute(
+                  builder: (_) => ParentInvoicesPage(token: token),
+                ),
+              );
+            },
+          ),
+          // ListTile(
+          //   leading: const Icon(Icons.settings),
+          //   title: const Text('الإعدادات'),
+          //   onTap: () {
+          //     Navigator.pop(context);
+          //     Navigator.push(
+          //       context,
+          //       MaterialPageRoute(
+          //         builder: (_) =>
+          //             SettingsPage(token: token, name: name, email: email),
+          //       ),
+          //     );
+          //   },
+          // ),
           const Divider(),
           ListTile(
             leading: const Icon(Icons.logout),
