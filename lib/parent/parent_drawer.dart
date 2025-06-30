@@ -185,7 +185,7 @@ class ParentDrawer extends StatelessWidget {
           ),
           ListTile(
             leading: const Icon(Icons.receipt),
-            title: const Text(' فواتير الأبناء الواجب دفعها'),
+            title: const Text(' فواتير الواجب دفعها'),
             onTap: () {
               Navigator.pop(context);
               Navigator.push(
@@ -198,7 +198,7 @@ class ParentDrawer extends StatelessWidget {
           ),
           ListTile(
             leading: const Icon(Icons.receipt),
-            title: const Text('مدغوعات فواتير الأبناء'),
+            title: const Text('مدغوعات'),
             onTap: () {
               Navigator.pop(context);
               Navigator.push(

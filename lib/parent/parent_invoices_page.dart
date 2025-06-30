@@ -104,7 +104,7 @@ class _ParentInvoicesPageState extends State<ParentInvoicesPage> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text('💳 تم السداد '),
+        title: const Text('💳 المدفوعات'),
         backgroundColor: Colors.green,
         centerTitle: true,
       ),
